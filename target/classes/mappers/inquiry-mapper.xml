@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="inquiryMapper">
+	<resultMap type="inquiry" id="inquiryResultSet">
+		<result column="INQUIRY_NO" property="inquiryNo"/>
+		<result column="USER_NO" property="userNo"/>
+		<result column="REPORT_ID" property="reportId"/>
+		<result column="INQUIRY_TITLE" property="inquiryTitle"/>
+		<result column="INQUIRY_CONTENT" property="inquiryContent"/>
+		<result column="INQUIRY_DATE" property="inquiryDate"/>
+		<result column="INQUIRY_STATUS" property="inquiryStatus"/>
+		<result column="ANSWER_STATUS" property="answerStatus"/>
+		<result column="ORIGIN_NAME" property="originName"/>
+		<result column="CHANGE_NAME" property="changeName"/>
+		<result column="USER_ID" property="userId"/>
+		<result column="ROWNUM" property="rownum"/>
+	</resultMap>
+	
+	<resultMap type="reply" id="replyResultSet">
+		<result column="REPLY_NO" property="replyNo"/>
+		<result column="REF_INO" property="refIno"/>
+		<result column="REPLY_CONTENT" property="replyContent"/>
+		<result column="REPLY_DATE" property="replyDate"/>
+		<result column="REPLY_STATUS" property="replyStatus"/>
+	</resultMap>
+	
+	<select id="selectListCount1" resultType="int">
+		SELECT COUNT(*)
+		FROM INQUIRY
+		WHERE USER_NO = #{userNo}
+	</select>
+	
+	<select id="selectAll1" resultMap="inquiryResultSet">
+		SELECT INQUIRY_NO, USER_NO, REPORT_ID, INQUIRY_TITLE, INQUIRY_DATE, INQUIRY_STATUS, ANSWER_STATUS, ORIGIN_NAME, CHANGE_NAME, USER_ID
+		FROM INQUIRY
+		JOIN USER_INFO USING(USER_NO)
+		WHERE INQUIRY_STATUS = 'Y'
+		AND USER_NO = #{userNo}
+		ORDER BY INQUIRY_NO DESC
+	</select>
+	
+	<select id="selectListCount2" resultType="int">
+		SELECT COUNT(*)
+		FROM INQUIRY
+	</select>
+	
+	<select id="selectAll2" resultMap="inquiryResultSet">
+		SELECT INQUIRY_NO, USER_NO, REPORT_ID, INQUIRY_TITLE, INQUIRY_DATE, INQUIRY_STATUS, ANSWER_STATUS, ORIGIN_NAME, CHANGE_NAME, USER_ID
+		FROM INQUIRY
+		JOIN USER_INFO USING(USER_NO)
+		WHERE INQUIRY_STATUS = 'Y'
+		ORDER BY INQUIRY_NO DESC
+	</select>
+	
+	<insert id="insertInquiry" parameterType="inquiry">
+		INSERT INTO INQUIRY (INQUIRY_NO, USER_NO, REPORT_ID, INQUIRY_TITLE, INQUIRY_CONTENT, ORIGIN_NAME, CHANGE_NAME)
+		VALUES (SEQ_INQNO.NEXTVAL,#{userNo},#{reportId},#{inquiryTitle},#{inquiryContent},#{originName},#{changeName})
+	</insert>
+	
+	<select id="inquiryDetail" resultMap="inquiryResultSet">
+		SELECT INQUIRY_NO, USER_NO, REPORT_ID, INQUIRY_TITLE, INQUIRY_CONTENT, INQUIRY_DATE, INQUIRY_STATUS, ORIGIN_NAME, CHANGE_NAME, USER_ID
+		FROM INQUIRY
+		JOIN USER_INFO USING(USER_NO)
+		WHERE INQUIRY_NO = #{inquiryNo}
+		AND INQUIRY_STATUS = 'Y'
+	</select>
+	
+	<select id="selectReply" resultMap="replyResultSet">
+		SELECT *
+		FROM REPLY
+		WHERE REF_INO = #{refIno}
+	</select>
+	
+	<update id="updateInquiry" parameterType="inquiry">
+		UPDATE INQUIRY
+		SET REPORT_ID=#{reportId},INQUIRY_TITLE=#{inquiryTitle}, INQUIRY_CONTENT=#{inquiryContent}, INQUIRY_DATE=SYSDATE, ORIGIN_NAME=#{originName}, CHANGE_NAME=#{changeName}
+		WHERE INQUIRY_NO = #{inquiryNo}
+	</update>
+	
+	<update id="deleteInquiry" parameterType="int">
+		UPDATE INQUIRY
+		SET INQUIRY_STATUS = 'N'
+		WHERE INQUIRY_NO = #{inquiryNo}
+	</update>
+	
+	<insert id="insertReply" parameterType="reply">
+		INSERT INTO REPLY (REPLY_NO, REF_INO, REPLY_CONTENT)
+		VALUES (SEQ_RENO.NEXTVAL, #{refIno}, #{replyContent})
+	</insert>
+	
+	<update id="updateAnswerStatus" parameterType="int">
+		UPDATE INQUIRY
+		SET ANSWER_STATUS = 'Y'
+		WHERE INQUIRY_NO = #{inquiryNo}
+	</update>
+	
+	<select id="inquiry" resultMap="inquiryResultSet">
+		SELECT ROWNUM,B.*
+		FROM
+		    (SELECT INQUIRY_NO,INQUIRY_TITLE,INQUIRY_CONTENT, INQUIRY_DATE, ANSWER_STATUS
+		    FROM INQUIRY 
+		    WHERE INQUIRY_STATUS = 'Y'
+		    AND USER_NO = #{userNo}
+		    ORDER BY INQUIRY_DATE DESC) B
+		WHERE ROWNUM BETWEEN 1 AND 5
+	</select>
+	
+</mapper>

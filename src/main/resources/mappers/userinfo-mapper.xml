@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="userinfoMapper">
+
+	<resultMap type="userinfo" id="userinforesultset">
+		<result column="USER_NO" property="userNo"/>
+		<result column="USER_ID" property="userId"/>
+		<result column="USER_PWD" property="userPwd"/>
+		<result column="USER_NAME" property="userName"/>
+		<result column="USER_BIRTH" property="userBirth"/>
+		<result column="USER_EMAIL" property="userEmail"/>
+		<result column="USER_PHONE" property="userPhone"/>
+		<result column="USER_ADDRESS" property="userAddress"/>
+		<result column="USER_ADDRESSDETAIL" property="userAddressDetail"/>
+		<result column="USER_GENDER" property="userGender"/>
+		<result column="ENROLL_DATE" property="enrollDate"/>
+		<result column="MODIFY_DATE" property="modifyDate"/>
+		<result column="STOP_DATE" property="stopDate"/>
+		<result column="QUIT_DATE" property="quitDate"/>
+		<result column="USER_STATUS" property="userStatus"/>
+	</resultMap>
+	
+	<!-- 로그인 시작 -->
+	<select id="loginuser" resultMap="userinforesultset">
+		SELECT USER_NO,USER_ID,USER_PWD,USER_NAME,
+			   USER_BIRTH,USER_EMAIL,USER_PHONE,USER_ADDRESS,USER_ADDRESSDETAIL,
+			   USER_GENDER,ENROLL_DATE,MODIFY_DATE,STOP_DATE,QUIT_DATE,USER_STATUS
+		FROM USER_INFO
+		WHERE USER_ID = #{userId}
+		AND (USER_STATUS = 'Y' OR USER_STATUS ='P')
+	</select>
+	<!-- 로그인 끝 -->
+	
+	<!-- 아이디 중복 체크 시작 -->
+	<select id="idCheck" resultType="int">
+		SELECT COUNT(*) count
+		FROM USER_INFO
+		WHERE USER_ID = #{userId}
+	</select>
+	<!-- 아이디 중복 체크 끝 -->
+	
+	<!-- 이메일 중복 체크 시작 -->
+	<select id="mailCheck" resultType="int">
+		SELECT COUNT(*) count
+		FROM USER_INFO
+		WHERE USER_EMAIL = #{userEmail}
+	</select>
+	<!-- 이메일 중복 체크 끝 -->
+	
+	<!-- 아이디 찾기 시작 -->
+	<select id="idsearch" resultType="string">
+		SELECT USER_ID
+		FROM USER_INFO
+		WHERE USER_EMAIL = #{userEmail}
+		AND USER_PHONE = #{userPhone}
+		AND (USER_STATUS = 'Y' OR USER_STATUS ='P')
+	</select>
+	<!-- 아이디 찾기 끝 -->
+	
+	<!-- 비밀번호 찾기 시작 -->
+	<select id="pwsearch" resultType="string">
+		SELECT USER_NO
+		FROM USER_INFO
+		WHERE USER_ID = #{userId}
+		AND USER_EMAIL = #{userEmail}
+		AND (USER_STATUS = 'Y' OR USER_STATUS ='P')
+	</select>
+	
+	<update id="pwupdate" parameterType="userinfo">
+		UPDATE USER_INFO
+		SET USER_PWD=#{userPwd},MODIFY_DATE=SYSDATE
+		WHERE USER_ID = #{userId}
+		AND (USER_STATUS = 'Y' OR USER_STATUS ='P')
+	</update>
+	<!-- 비밀번호 찾기 끝 -->
+	
+	<!-- 회원가입 시작 -->
+		<insert id="insertuser" parameterType="userinfo">
+		INSERT
+		INTO USER_INFO
+		(USER_NO,USER_ID,USER_PWD,USER_NAME,USER_BIRTH,USER_EMAIL,USER_PHONE,USER_ADDRESS,USER_ADDRESSDETAIL,USER_GENDER)
+		VALUES (SEQ_USNO.NEXTVAL,#{userId},#{userPwd},#{userName},#{userBirth},#{userEmail},#{userPhone},#{userAddress},#{userAddressDetail},#{userGender})
+	</insert>
+	<!-- 회원가입 끝 -->
+	
+	<!-- 회원정보 변경 - 이름 시작-->
+	<update id="updateusername" parameterType="userinfo">
+		UPDATE USER_INFO
+		SET USER_NAME=#{userName},MODIFY_DATE=SYSDATE
+		WHERE USER_ID = #{userId}
+		AND (USER_STATUS = 'Y' OR USER_STATUS ='P')
+	</update>
+	<!-- 회원정보 변경 - 이름  끝-->
+	
+	<!-- 회원정보 변경 - 전화번호 시작 -->
+	<update id="updateuserphone" parameterType="userinfo">
+		UPDATE USER_INFO
+		SET USER_PHONE=#{userPhone},MODIFY_DATE=SYSDATE
+		WHERE USER_ID = #{userId}
+		AND (USER_STATUS = 'Y' OR USER_STATUS ='P')
+	</update>
+	<!-- 회원정보 변경 - 전화번호 끝 -->
+	
+	<!-- 회원정보 변경 - 이메일 시작 -->
+	<update id="updateuseremail" parameterType="userinfo">
+		UPDATE USER_INFO
+		SET USER_EMAIL=#{userEmail},MODIFY_DATE=SYSDATE
+		WHERE USER_ID = #{userId}
+		AND (USER_STATUS = 'Y' OR USER_STATUS ='P')
+	</update>
+	<!-- 회원정보 변경 - 이메일 끝 -->
+	
+	<!-- 회원정보 변경 - 비밀번호 시작 -->
+	<update id="updateuserpwd" parameterType="userinfo">
+		UPDATE USER_INFO
+		SET USER_PWD=#{userPwd},MODIFY_DATE=SYSDATE
+		WHERE USER_ID = #{userId}
+		AND (USER_STATUS = 'Y' OR USER_STATUS ='P')
+	</update>
+	<!-- 회원정보 변경 - 비밀번호 끝 -->
+
+	<!-- 회원 탈퇴 -->
+	<update id="deleteuser" parameterType="String">
+		UPDATE USER_INFO
+		SET USER_STATUS = 'N', QUIT_DATE = SYSDATE
+		WHERE USER_ID = #{userId}
+	</update>
+	<!-- 회원 탈퇴 끝-->
+	
+	<select id="selectUserId" parameterType="int" resultType="string">
+		SELECT USER_ID
+		FROM USER_INFO
+		WHERE USER_NO = #{userNo}
+	</select>
+	
+	<select id="selectMasterId" parameterType="int" resultType="string">
+		SELECT USER_ID
+		FROM USER_INFO
+		JOIN ROOMLIST USING(USER_NO)
+		WHERE ROOM_NO = #{roomNo}
+	</select>
+
+</mapper>

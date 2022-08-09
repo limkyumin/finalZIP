@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="attachmentMapper">
+	<resultMap type="attachment" id="attachmentResultSet">
+		<result column="FILE_NO" property="fileNo"/>
+		<result column="REF_RNO" property="refRno"/>
+		<result column="ORIGIN_NAME" property="originName"/>
+		<result column="CHANGE_NAME" property="changeName"/>
+		<result column="UPLOAD_DATE" property="uploadDate"/>
+		<result column="FILE_LEVEL" property="fileLevel"/>
+		<result column="STATUS" property="status"/>
+	</resultMap>
+	
+	<select id="selectImages" resultMap="attachmentResultSet">
+		SELECT ORIGIN_NAME, CHANGE_NAME
+		FROM ATTACHMENT
+		WHERE REF_RNO = #{roomNo}
+		AND STATUS = 'Y'
+		AND (FILE_LEVEL = 1
+        OR FILE_LEVEL = 2)
+	</select>
+	
+	<select id="selectDocument" resultMap = "attachmentResultSet">
+		SELECT ORIGIN_NAME, CHANGE_NAME
+		FROM ATTACHMENT
+		WHERE REF_RNO = #{roomNo}
+		AND STATUS = 'Y'
+		AND FILE_LEVEL = 3
+	</select>
+	
+	<insert id="registerThumbnail" parameterType="attachment">
+		INSERT INTO ATTACHMENT (FILE_NO, REF_RNO, ORIGIN_NAME, CHANGE_NAME, FILE_LEVEL)
+		VALUES (SEQ_ATNO.NEXTVAL,SEQ_RNO.CURRVAL,#{originName},#{changeName},1)
+	</insert>
+	
+	<insert id="registerImages" parameterType="attachment">
+		INSERT INTO ATTACHMENT (FILE_NO, REF_RNO, ORIGIN_NAME, CHANGE_NAME, FILE_LEVEL)
+		VALUES (SEQ_ATNO.NEXTVAL,SEQ_RNO.CURRVAL,#{originName},#{changeName},2)
+	</insert>
+	
+	<insert id="registerDocument" parameterType="attachment">
+		INSERT INTO ATTACHMENT (FILE_NO, REF_RNO, ORIGIN_NAME, CHANGE_NAME, FILE_LEVEL)
+		VALUES (SEQ_ATNO.NEXTVAL,SEQ_RNO.CURRVAL,#{originName},#{changeName},3)
+	</insert>
+	
+	<update id="updateFiles">
+		UPDATE ATTACHMENT
+		SET STATUS = 'N'
+		WHERE REF_RNO = #{roomNo}
+	</update>
+	
+	<insert id="updateThumbnail" parameterType="attachment">
+		INSERT INTO ATTACHMENT (FILE_NO, REF_RNO, ORIGIN_NAME, CHANGE_NAME, FILE_LEVEL)
+		VALUES (SEQ_ATNO.NEXTVAL,#{refRno},#{originName},#{changeName},1)
+	</insert>
+	
+	<insert id="updateImages" parameterType="attachment">
+		INSERT INTO ATTACHMENT (FILE_NO, REF_RNO, ORIGIN_NAME, CHANGE_NAME, FILE_LEVEL)
+		VALUES (SEQ_ATNO.NEXTVAL,#{refRno},#{originName},#{changeName},2)
+	</insert>
+	
+	<insert id="updateDocument" parameterType="attachment">
+		INSERT INTO ATTACHMENT (FILE_NO, REF_RNO, ORIGIN_NAME, CHANGE_NAME, FILE_LEVEL)
+		VALUES (SEQ_ATNO.NEXTVAL,#{refRno},#{originName},#{changeName},3)
+	</insert>
+</mapper>

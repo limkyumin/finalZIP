@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd" >
+<configuration>
+	<settings>
+		<setting name="jdbcTypeForNull" value="NULL"/>
+	</settings>
+	
+	<typeAliases>
+		<typeAlias type="com.kh.zip.userinfo.model.vo.Userinfo" alias="userinfo"/>
+		<typeAlias type="com.kh.zip.roomlist.model.vo.Roomlist" alias="roomlist"/>
+		<typeAlias type="com.kh.zip.roomlist.model.vo.Attachment" alias="attachment"/>
+		<typeAlias type="com.kh.zip.admin.model.vo.userInfo" alias="admin"/>
+		<typeAlias type="com.kh.zip.admin.model.vo.roomManagement" alias="adminRoom"/>
+		<typeAlias alias="adminInquiry" type="com.kh.zip.admin.model.vo.userInquiry"/>
+		<typeAlias type="com.kh.zip.inquiry.model.vo.Inquiry" alias="inquiry"/>
+		<typeAlias type="com.kh.zip.inquiry.model.vo.Reply" alias="reply"/>
+		<typeAlias type="com.kh.zip.roomlist.model.vo.Wishlist" alias="wishlist"/>
+		<typeAlias type="com.kh.zip.chat.model.vo.Chatroom" alias="chatroom"/>
+		<typeAlias type="com.kh.zip.chat.model.vo.Chatmessage" alias="chatmessage"/>
+		<typeAlias type="com.kh.zip.noticelist.model.vo.Noticelist" alias="noticelist"/>
+		<typeAlias type="com.kh.zip.review.model.vo.Review" alias="review"/>
+		<typeAlias type="com.kh.zip.userinfo.model.vo.Naver" alias="naver"/>
+	</typeAliases>
+	
+	<mappers>
+		<mapper resource="/mappers/userinfo-mapper.xml"/>
+		<mapper resource="/mappers/roomlist-mapper.xml"/>
+		<mapper resource="/mappers/attachment-mapper.xml"/>
+		<mapper resource="/mappers/admin-mapper.xml"/>
+		<mapper resource="/mappers/adminRoom-mapper.xml"/>
+		<mapper resource="/mappers/adminInquiry-mapper.xml"/>
+		<mapper resource="/mappers/inquiry-mapper.xml"/>
+		<mapper resource="/mappers/wishlist-mapper.xml"/>
+		<mapper resource="/mappers/chat-mapper.xml"/>
+		<mapper resource="/mappers/noticelist-mapper.xml"/>
+		<mapper resource="/mappers/review-mapper.xml"/>
+		<mapper resource="/mappers/naver-mapper.xml"/>
+	</mappers>
+</configuration>
