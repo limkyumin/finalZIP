@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="chatMapper">
+	<resultMap type="chatroom" id="chatroomResultSet">
+		<result column="ROOM_ID" property="roomId"/>
+		<result column="USER_ID" property="userId"/>
+		<result column="MASTER_ID" property="masterId"/>
+		<result column="UNREAD_COUNT" property="unReadCount"/>
+	</resultMap>
+	
+	<resultMap type="chatmessage" id="chatmessageResultSet">
+		<result column="MESSAGE_ID" property="messageId"/>
+		<result column="ROOM_ID" property="roomId"/>
+		<result column="MESSAGE_CONTENT" property="messageContent"/>
+		<result column="USER_ID" property="userId"/>
+		<result column="UNREAD_COUNT" property="unReadCount"/>
+		<result column="SESSION_COUNT" property="sessionCount"/>
+	</resultMap>
+	
+	<!-- 방찾기 상세페이지에서 방등록 사용자와 로그인 사용자와의 채팅방 조회 -->
+	<select id="selectChatroom" resultMap="chatroomResultSet">
+		SELECT * FROM CHATROOM
+		WHERE USER_ID = #{userId} AND MASTER_ID = #{masterId}
+	</select>
+	<!-- 신규 채팅방일 때 채팅방 생성 -->
+	<insert id="createChat" parameterType="chatroom">
+		INSERT INTO CHATROOM (ROOM_ID, USER_ID, MASTER_ID)
+		VALUES (SEQ_CRNO.NEXTVAL, #{userId}, #{masterId})
+	</insert>
+	
+	<select id="selectChatRoom" resultMap="chatroomResultSet" parameterType="chatmessage">
+		SELECT * FROM CHATROOM
+		WHERE (USER_ID = #{userId} AND MASTER_ID = #{roomId}) OR ((USER_ID = #{roomId} AND MASTER_ID = #{userId}))
+	</select>
+	<select id="selectChatRoomId" resultType="string" parameterType="chatmessage">
+		SELECT ROOM_ID FROM CHATROOM
+		WHERE (USER_ID = #{userId} AND MASTER_ID = #{roomId}) OR ((USER_ID = #{roomId} AND MASTER_ID = #{userId}))
+	</select>
+	
+	<insert id="insertMessage" parameterType="chatmessage">
+		<if test="sessionCount == 1">
+			INSERT INTO CHATMESSAGE (MESSAGE_ID, ROOM_ID, MESSAGE_CONTENT, USER_ID, UNREAD_COUNT, SESSION_COUNT)
+			VALUES (SEQ_CMNO.NEXTVAL, #{roomId}, #{messageContent}, #{userId}, 1, #{sessionCount})
+		</if>
+		<if test="sessionCount == 2">
+			INSERT INTO CHATMESSAGE (MESSAGE_ID, ROOM_ID, MESSAGE_CONTENT, USER_ID, UNREAD_COUNT, SESSION_COUNT)
+			VALUES (SEQ_CMNO.NEXTVAL, #{roomId}, #{messageContent}, #{userId}, 0, #{sessionCount})
+		</if>
+	</insert>
+	
+	<select id="messageList" parameterType="chatmessage" resultMap="chatmessageResultSet">
+		SELECT * FROM CHATMESSAGE
+		WHERE (ROOM_ID = #{roomId} AND USER_ID = #{userId}) OR (ROOM_ID = #{userId} AND USER_ID = #{roomId})
+	</select>
+	
+	<select id="searchChatRoom" parameterType="chatroom" resultMap="chatroomResultSet">
+		SELECT * FROM CHATROOM
+		WHERE USER_ID = #{userId} AND MASTER_ID = #{masterId}
+	</select>
+	
+	<select id="chatRoomList" parameterType="string" resultMap="chatroomResultSet">
+		SELECT * FROM CHATROOM
+		WHERE USER_ID = #{userId} OR MASTER_ID = #{masterId}
+	</select>
+	
+	<select id="selectUnreadCount" parameterType="chatmessage" resultType="int">
+		SELECT COUNT(*) FROM CHATMESSAGE
+		WHERE ROOM_ID = #{roomId} AND USER_ID != #{userId} AND UNREAD_COUNT = 1
+	</select>
+	
+	<select id="updateCount" parameterType="chatmessage">
+		UPDATE CHATMESSAGE
+		SET UNREAD_COUNT = 0
+		WHERE ROOM_ID = #{roomId} AND USER_ID = #{userId} AND UNREAD_COUNT = 1
+	</select>
+</mapper>

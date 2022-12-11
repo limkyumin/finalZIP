@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="roomlistMapper">
+	<resultMap type="roomlist" id="roomlistResultSet">
+		<result column="ROOM_NO" property="roomNo"/>
+		<result column="USER_NO" property="userNo"/>
+		<result column="TITLE" property="title"/>
+		<result column="BUILDING_TYPE" property="buildingType"/>
+		<result column="BUILDING_LEVEL" property="buildingLevel"/>
+		<result column="TENANT_NUMBER" property="tenantNumber"/>
+		<result column="ADDRESS" property="address"/>
+		<result column="ADDRESS_DETAIL" property="addressDetail"/>
+		<result column="WISH_GENDER" property="wishGender"/>
+		<result column="WISH_AGE" property="wishAge"/>
+		<result column="PET_YN" property="petYn"/>
+		<result column="SMOKE_YN" property="smokeYn"/>
+		<result column="PRICE" property="price"/>
+		<result column="CONTENT" property="content"/>
+		<result column="STATUS" property="status"/>
+		<result column="USER_ID" property="userId"/>
+		<result column="CHANGE_NAME" property="changeName"/>
+		<result column="ROWNUM" property="rownum"/>
+	</resultMap>
+	
+	<select id="searchRoomAll" resultMap="roomlistResultSet">
+		SELECT ROOM_NO, USER_NO, TITLE, ADDRESS, WISH_GENDER, PET_YN, SMOKE_YN, PRICE, CHANGE_NAME
+		FROM ROOMLIST R
+		JOIN ATTACHMENT ON(ROOM_NO = REF_RNO)
+		WHERE R.STATUS = 'Y'
+		AND FILE_LEVEL = 1
+	</select>
+	
+	<select id="detailRoom" resultMap="roomlistResultSet">
+		SELECT ROOM_NO, USER_NO, TITLE, BUILDING_TYPE, BUILDING_LEVEL, TENANT_NUMBER, ADDRESS, ADDRESS_DETAIL, WISH_GENDER, WISH_AGE, PET_YN, SMOKE_YN, PRICE, USER_ID, CONTENT, STATUS
+		FROM ROOMLIST R
+		JOIN USER_INFO USING(USER_NO)
+		WHERE ROOM_NO = #{roomNo}
+	</select>
+	
+	<select id="checkRoom" resultMap="roomlistResultSet">
+		SELECT *
+		FROM ROOMLIST
+		WHERE STATUS = 'Y'
+		AND USER_NO = #{userNo}
+	</select>
+	
+	<insert id="registerRoom" parameterType="roomlist">
+		INSERT INTO ROOMLIST (ROOM_NO, USER_NO, TITLE, BUILDING_TYPE, BUILDING_LEVEL, TENANT_NUMBER, ADDRESS, ADDRESS_DETAIL, WISH_GENDER, WISH_AGE, PET_YN, SMOKE_YN, PRICE, CONTENT)
+		VALUES (SEQ_RNO.NEXTVAL,#{userNo},#{title},#{buildingType},#{buildingLevel},#{tenantNumber},#{address},#{addressDetail},#{wishGender},#{wishAge},#{petYn},#{smokeYn},#{price},#{content})
+	</insert>
+	
+	<update id="updateRoom" parameterType="roomlist">
+		UPDATE ROOMLIST
+		SET TITLE=#{title}, BUILDING_TYPE=#{buildingType}, BUILDING_LEVEL=#{buildingLevel}, TENANT_NUMBER=#{tenantNumber}, ADDRESS=#{address}, 
+			ADDRESS_DETAIL=#{addressDetail}, WISH_GENDER=#{wishGender}, WISH_AGE=#{wishAge}, PET_YN=#{petYn}, SMOKE_YN=#{smokeYn}, PRICE=#{price}, 
+			CONTENT=#{content}
+		WHERE ROOM_NO = #{roomNo}
+	</update>
+	
+	<update id="deleteRoom" parameterType="int">
+		UPDATE ROOMLIST
+		SET STATUS = 'N'
+		WHERE ROOM_NO = #{roomNo}
+	</update>
+	
+	<update id="approveRoom" parameterType="int">
+		UPDATE ROOMLIST
+		SET STATUS = 'Y'
+		WHERE ROOM_NO = #{roomNo}
+	</update>
+	
+	<select id="selectOption" resultMap="roomlistResultSet" parameterType="roomlist">
+		SELECT ROOM_NO, USER_NO, TITLE, ADDRESS, WISH_GENDER, PET_YN, SMOKE_YN, PRICE, CHANGE_NAME
+		FROM ROOMLIST R
+		JOIN ATTACHMENT ON(ROOM_NO = REF_RNO)
+		WHERE R.STATUS = 'Y'
+		AND FILE_LEVEL = 1
+		<if test="wishGender != 'all'">
+			AND WISH_GENDER = #{wishGender}
+		</if>
+		<if test="buildingType != 'all'">
+			AND BUILDING_TYPE = #{buildingType}
+		</if>
+	</select>
+	
+	<select id="roomenroll" resultMap="roomlistResultSet">
+		SELECT ROOM_NO, TITLE, CONTENT
+		FROM ROOMLIST
+		WHERE USER_NO = #{userNo}
+	</select>
+	
+</mapper>

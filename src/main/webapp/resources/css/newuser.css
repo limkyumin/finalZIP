@@ -1,0 +1,66 @@
+#newuser{
+	width: 30%;
+	margin: auto;
+	color: white;
+}
+#btnyn{
+	float: right;
+}
+#agree1, #agree2{
+	white-space: pre-line;
+	font-size: 15px;
+}
+#chkpad{
+	height: 10%;
+}
+.chk{
+	font-size: 20px;
+	text-align: left;
+}
+#chkboxall{
+	padding-top:10px;
+	padding-bottom: 10px;
+}
+#chkboxone{
+	padding-top:10px;
+	padding-bottom: 10px;
+}
+#chkboxtwo{
+	padding-top:10px;
+	padding-bottom: 10px;
+}
+.chktext{
+	text-align: left;
+}
+TEXTAREA {
+        background-color: #ffffff;
+        font-family: 돋움,arial;
+        font-family:Verdana;
+        font-weight:bold;
+}
+
+textarea::-webkit-scrollbar {
+	width: 15px;
+}
+textarea::-webkit-scrollbar-thumb {
+	background-color: #2D55C9;
+	border-radius: 10px;
+}
+textarea::-webkit-scrollbar-track {
+	background-color: rgb(208, 206, 206);
+	border-radius: 10px;
+	box-shadow: inset 0px 0px 5px white;
+}
+button{
+	background-color: #2D55C9;
+    border-color: #13369b;
+    margin-bottom: 0;
+    text-align: center;
+    cursor: pointer;
+    padding: 6px 12px;
+    font-size: 18px;
+    line-height: 1.5;
+    border-radius: 3px;
+    font-weight: 700;
+    color: white;
+}

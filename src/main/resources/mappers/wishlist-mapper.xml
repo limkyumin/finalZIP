@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="wishlistMapper">
+	
+	<resultMap type="wishlist" id="wishlistResultSet">
+		<result column="WISH_NO" property="wishNo"/>
+		<result column="ROOM_NO" property="roomNo"/>
+		<result column="USER_NO" property="userNo"/>
+		<result column="STATUS" property="status"/>
+		<result column="TITLE" property="title"/>
+		<result column="ADDRESS" property="address"/>
+		<result column="USER_ID" property="userId"/>
+	</resultMap>
+	
+	<select id="selectWishlist" resultMap="wishlistResultSet">
+		SELECT *
+		FROM WISHLIST
+		WHERE ROOM_NO = #{roomNo}
+		AND USER_NO = #{userNo}
+		AND STATUS = 'Y'
+	</select>
+	
+	<insert id="addWishlist" parameterType="wishlist">
+		INSERT INTO WISHLIST (WISH_NO, ROOM_NO, USER_NO)
+		VALUES (SEQ_WNO.NEXTVAL, #{roomNo}, #{userNo})
+	</insert>
+	
+	<update id="removeWishlist" parameterType="wishlist">
+		UPDATE WISHLIST
+		SET STATUS = 'N'
+		WHERE ROOM_NO = #{roomNo} AND USER_NO = #{userNo}
+	</update>
+	
+	<select id="mywishlist" resultMap="wishlistResultSet">
+		SELECT W.WISH_NO, W.ROOM_NO, U.USER_ID, R.TITLE, R.ADDRESS
+		FROM WISHLIST W
+		JOIN ROOMLIST R ON (R.ROOM_NO = W.ROOM_NO)
+		JOIN USER_INFO U ON (U.USER_NO = R.USER_NO)
+		WHERE W.STATUS = 'Y'
+		AND W.USER_NO = #{userNo}
+		ORDER BY WISH_NO DESC
+	</select>
+	
+	<select id="wishListCount" resultType="int">
+		SELECT COUNT(*)
+		FROM WISHLIST
+		WHERE USER_NO = #{userNo}
+		AND STATUS = 'Y'
+	</select>
+	
+</mapper>

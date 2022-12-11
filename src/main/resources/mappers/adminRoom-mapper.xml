@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="adminRoomMapper">
+
+	<select id="roomRequestCount" resultType="int">
+		SELECT COUNT(*)
+		FROM ROOMLIST R
+		WHERE R.STATUS = 'W' 
+	</select>
+
+	<resultMap type="adminRoom" id="roomList">
+	<!-- 이름 아이디 성별 회원상태 가입일 -->
+		<result column="ROOM_NO" property="roomNo"/>
+		<result column="USER_NO" property="userNo"/>
+		<result column="TITLE" property="title"/>
+		<result column="BUILDING_TYPE" property="bulidingType"/>
+		<result column="BUILDING_LEVEL" property="bulidingLevel"/>
+		<result column="TENANT_NUMBER" property="tenantNumber"/>
+		<result column="ADDRESS" property="address"/>
+		<result column="ADDRESS_DETAIL" property="addressDetail"/>
+		<result column="WISH_GENDER" property="wishGender"/>
+		<result column="WISH_AGE" property="wishAge"/>
+		<result column="PET_YN" property="petYn"/>
+		<result column="SMOKE_YN" property="smokeYn"/>
+		<result column="PRICE" property="price"/>
+		<result column="CONTENT" property="content"/>
+		<result column="STATUS" property="status"/>
+		<result column="USER_ID" property="userId"/>
+	</resultMap>
+
+	<select id="roomRequestList" resultMap="roomList">
+		SELECT ROOM_NO, USER_ID, TITLE 
+		FROM ROOMLIST R
+		JOIN USER_INFO USING(USER_NO)
+		WHERE R.STATUS= 'W'
+		ORDER BY ROOM_NO ASC
+	</select>
+	
+	<select id="roomBell" resultType="_int">
+		SELECT COUNT(*)
+		FROM ROOMLIST R
+		WHERE R.STATUS = 'W' 
+	</select>
+
+	<select id="mainRoomRequestList" resultMap="roomList">
+		SELECT * FROM (
+    	SELECT ROWNUM as num, r.ROOM_NO,TITLE
+		FROM ROOMLIST r
+		JOIN USER_INFO USING(USER_NO)
+		WHERE r.STATUS= 'W'
+		ORDER BY ROOM_NO ASC ) R
+		WHERE R.num BETWEEN #{startNum2} AND #{endNum2}
+		
+	</select>
+
+	<select id="selectApartmentCnt" resultType="_int">
+		SELECT COUNT(*)
+        FROM ROOMLIST
+        WHERE BUILDING_TYPE = '아파트'
+	</select>
+	
+	<select id="selectVillamentCnt" resultType="_int">
+		SELECT COUNT(*)
+        FROM ROOMLIST
+        WHERE BUILDING_TYPE = '빌라'
+	</select>
+	
+	<select id="selectHousingCnt" resultType="_int">
+		SELECT COUNT(*)
+        FROM ROOMLIST
+        WHERE BUILDING_TYPE = '주택'
+	</select>
+
+	<select id="selectPriceOne" resultType="_int">
+		SELECT COUNT(*)
+		FROM ROOMLIST
+		
+		<![CDATA[WHERE PRICE >= 30 AND PRICE <= 50]]>
+	</select>
+
+	<select id="selectPriceTwo" resultType="_int">
+		SELECT COUNT(*)
+		FROM ROOMLIST
+		<![CDATA[WHERE PRICE >= 51 AND PRICE <= 70]]>
+	</select>
+	
+	<select id="selectPriceThree" resultType="_int">
+		SELECT COUNT(*)
+		FROM ROOMLIST
+		<![CDATA[WHERE PRICE >= 71]]>
+	</select>
+	
+
+
+
+
+
+</mapper>

@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="adminMapper">
+
+	<select id="selectListCount" resultType="int">
+		SELECT COUNT(*)
+		FROM USER_INFO
+		WHERE USER_NO != 1
+	</select>	
+
+	<resultMap type="admin" id="userList">
+	<!-- 이름 아이디 성별 회원상태 가입일 -->
+		<result column="USER_NO" property="userNo"/>
+		<result column="USER_NAME" property="userName"/>
+		<result column="USER_ID" property="userId"/>
+		<result column="USER_GENDER" property="userGender"/>
+		<result column="USER_STATUS" property="userStatus"/>
+		<result column="ENROLL_DATE" property="enrollDate"/>
+	</resultMap>
+	
+	<select id="selectUserList" resultMap="userList">
+		SELECT USER_NO, USER_NAME, USER_ID, USER_GENDER, USER_STATUS, ENROLL_DATE
+		FROM USER_INFO 
+		WHERE USER_NO != 1
+		ORDER BY USER_NO DESC
+	</select>
+	
+	<update id="memberStatus" parameterType="admin">
+		UPDATE USER_INFO
+		SET USER_STATUS = #{userStatus},
+		<if test='userStatus == "P"'>
+			STOP_DATE = SYSDATE,
+		</if>
+		<if test='userStatus == "N"'>
+			QUIT_DATE = SYSDATE,
+		</if>
+		MODIFY_DATE = SYSDATE
+		WHERE USER_ID = #{userId}
+	</update>
+	
+  	<select id="selectSearchCount" resultType="int" parameterType="hashmap">
+		SELECT COUNT(*)
+		FROM USER_INFO
+		WHERE USER_NO != 1
+		
+		<if test="type == 'userId'">
+		AND USER_ID
+		</if>
+		<if test="type == 'userName'">
+		AND USER_NAME
+		</if>
+		<if test="type == 'userStatus'">
+		AND USER_STATUS
+		</if>
+		LIKE '%'||#{keyword}||'%'
+	</select>
+
+	
+   	<select id="selectUserList2" resultMap="userList">
+		SELECT USER_NO, USER_NAME, USER_ID, USER_GENDER, USER_STATUS, ENROLL_DATE
+		FROM USER_INFO
+		WHERE USER_NO != 1
+		
+		<if test="type == 'userId'">
+		AND USER_ID
+		</if>
+		<if test="type == 'userName'">
+		AND USER_NAME
+		</if>
+		<if test="type == 'userStatus'">
+		AND USER_STATUS
+		</if>
+		LIKE '%'||#{keyword}||'%'
+		
+	</select>
+	
+	<select id="selectYmemberCnt" resultType="_int">
+		SELECT COUNT(*)
+        FROM USER_INFO
+        WHERE TO_CHAR(ENROLL_DATE,'yyyy-mm-dd') = TO_CHAR(SYSDATE, 'yyyy-mm-dd')
+        AND USER_STATUS = 'Y'
+        ORDER BY ENROLL_DATE ASC
+	</select>
+	
+	<select id="selectSmemberCnt" resultType="_int">
+		SELECT COUNT(*)
+        FROM USER_INFO
+        WHERE TO_CHAR(STOP_DATE,'yyyy-mm-dd') = TO_CHAR(SYSDATE, 'yyyy-mm-dd')
+        AND USER_STATUS = 'P'
+	</select>
+	
+	<select id="selectQmemberCnt" resultType="_int">
+		SELECT COUNT(*)
+        FROM USER_INFO
+        WHERE TO_CHAR(QUIT_DATE,'yyyy-mm-dd') = TO_CHAR(SYSDATE, 'yyyy-mm-dd')
+        AND USER_STATUS = 'N'
+	</select>
+	
+	<select id="roomBell" resultType="_int">
+		SELECT COUNT(*)
+		FROM ROOMLIST R
+		WHERE R.STATUS = 'W' 
+	</select>
+	
+	<select id="inquiryMsg" resultType="_int">
+		SELECT COUNT(*)
+		FROM INQUIRY I
+		WHERE I.INQUIRY_STATUS = 'Y'
+		AND ANSWER_STATUS = 'N'
+	</select>
+	<!-- 이번 달 신규 -->
+	<select id="selectYmemberMonthCnt" resultType="_int">
+		SELECT COUNT(*)
+        FROM USER_INFO
+        WHERE TO_CHAR(ENROLL_DATE,'YYYY-MM-DD')
+			BETWEEN (TO_CHAR(TRUNC(SYSDATE,'MM'),'YYYY-MM-DD'))
+		AND TO_CHAR(LAST_DAY(SYSDATE),'YYYY-MM-DD')
+		AND USER_STATUS = 'Y'
+	</select>
+	<!-- 이번 달 정지 -->
+	<select id="selectSmemberMonthCnt" resultType="_int">
+		SELECT COUNT(*)
+        FROM USER_INFO
+        WHERE TO_CHAR(ENROLL_DATE,'YYYY-MM-DD')
+			BETWEEN (TO_CHAR(TRUNC(SYSDATE,'MM'),'YYYY-MM-DD'))
+		AND TO_CHAR(LAST_DAY(SYSDATE),'YYYY-MM-DD')
+		AND USER_STATUS = 'P'
+	</select>
+	<!-- 이번 달 탈퇴 -->
+	<select id="selectQmemberMonthCnt" resultType="_int">
+		SELECT COUNT(*)
+        FROM USER_INFO
+        WHERE TO_CHAR(ENROLL_DATE,'YYYY-MM-DD')
+			BETWEEN (TO_CHAR(TRUNC(SYSDATE,'MM'),'YYYY-MM-DD'))
+		AND TO_CHAR(LAST_DAY(SYSDATE),'YYYY-MM-DD')
+		AND USER_STATUS = 'N'
+	</select>
+	
+	<select id="selectListCountYmember" resultType="int">
+		SELECT COUNT(*)
+		FROM USER_INFO
+		WHERE USER_NO != 1
+		AND ENROLL_DATE = TO_CHAR(SYSDATE,'YYYY-MM-DD')
+	</select>
+	
+	<select id="selectUserListYmember" resultMap="userList">
+		SELECT USER_NO, USER_NAME, USER_ID, USER_GENDER, USER_STATUS, ENROLL_DATE
+		FROM USER_INFO 
+		WHERE USER_NO != 1
+		AND ENROLL_DATE = TO_CHAR(SYSDATE,'YYYY-MM-DD')
+		ORDER BY USER_NO DESC
+	</select>
+	
+	<select id="selectSearchYmember" resultType="int" parameterType="hashmap">
+		SELECT COUNT(*)
+		FROM USER_INFO
+		WHERE USER_NO != 1
+		
+		<if test="type == 'userId'">
+		AND USER_ID
+		</if>
+		<if test="type == 'userName'">
+		AND USER_NAME
+		</if>
+		<if test="type == 'userStatus'">
+		AND USER_STATUS
+		</if>
+		LIKE '%'||#{keyword}||'%'
+		AND ENROLL_DATE = TO_CHAR(SYSDATE,'YYYY-MM-DD')
+	</select>
+
+	
+   	<select id="selectUserListYmember2" resultMap="userList">
+		SELECT USER_NO, USER_NAME, USER_ID, USER_GENDER, USER_STATUS, ENROLL_DATE
+		FROM USER_INFO
+		WHERE USER_NO != 1
+		
+		<if test="type == 'userId'">
+		AND USER_ID
+		</if>
+		<if test="type == 'userName'">
+		AND USER_NAME
+		</if>
+		<if test="type == 'userStatus'">
+		AND USER_STATUS
+		</if>
+		LIKE '%'||#{keyword}||'%'
+		AND ENROLL_DATE = TO_CHAR(SYSDATE,'YYYY-MM-DD')
+	</select>
+</mapper>
